@@ -1,0 +1,241 @@
+| \gWelcome to REPLesent!
+
+REPLesent is a neat little tool to build presentations
+using the Scala REPL.
+
+It is a good option for training sessions and talks
+with some live coding. More on that later.
+
+To continue, type the letter '\bn\s' (no quotes) and \bRETURN\s.
+---
+You use '\bn\s' to advance to the next slide.
+
+Let's try it, type '\bn\s' again to see it.
+---
+To go back to a previous slide, you can type '\bp\s'.
+
+Try '\bp\s' now to return to the prior slide and
+then use '\bn\s' twice to go to the next slide.
+
+But please be careful to not read and
+follow these instructions again.
+
+You would not want to get stuck in a
+infinite loop between two slides forever.
+---
+Nice, I am glad you made your way to this slide.
+
+But you know, all that "use '\bn\s' twice" business was a lot of effort.
+
+There should be a better way to advance two slides at once.
+
+And, as a matter of fact, there is!
+
+You should try '\b2 n\s'. Go ahead, enter '\b2 n\s' and see what happens!
+---
+Holy cow, that was awesome!
+
+OK, let's try something new again.
+
+This time I want you to enter '\bl\s' (ell).
+
+I'm not telling what it does.
+---
+OK, you have just skipped a slide.
+
+Aren't you curious to know what that slide had to say?
+
+You already know that you could use '\bp\s' to go back,
+but let's try something different now.
+
+The slide you missed was slide number 5.
+
+To jump to slide 5, just use the command '\b5 go\s'. Go!
+---
+| \gBasics
+
+Creating presentations is very easy.
+
+All you need is a plain text file. Anything you write in the file is
+displayed on the screen, centered vertically and horizontally.
+
+To separate slides, just put three dashes (\r---\s) on a line by themselves.
+
+It is also possible to create "builds", where a slide is
+displayed incrementally, step by step.
+
+Think bullet points in Powerpoint.
+
+Advance to the next slide to learn more about builds.
+---
+| \gBuilds (Incremental Slides)
+
+Builds are separated by two dashes (\r--\s) on a line by themselves.
+
+Type '\bn\s' a few times to see how it works.
+--
+
+\*Phase 1\s: Collect underpants
+--
+
+\*Phase 2\s: ?
+--
+
+\*Phase 3\s: Profit
+---
+| \gText Alignment
+
+Text can be aligned with ease. Just start a line with one of the
+following commands. The space after the command is mandatory.
+
+<< '\r<< \s' flushes the line to the left of the screen.
+
+< '\r< \s' aligns the line to the left of the slide (default).
+
+| '\r| \s' centers the line.
+
+> '\r> \s' aligns the line to the right of the slide.
+
+>> '\r>> \s' flushes the line to the right of the screen.
+
+Whitespace other than the one following the alignment command
+is preserved. You can easily align manually if needed.
+---
+| \gANSI Color Support
+
+\rOh \gmy \bgosh, \cit's \mfull \yof \scolors\r!\g!\b!\c!\m!\y!\w!\k!
+
+ANSI color escape codes:
+\\r \rred\s   \\g \ggreen\s    \\b \bblue\s    \\k \kblack
+\\c \ccyan\s  \\m \mmagenta\s  \\y \yyellow\s  \\w \wwhite
+
+\\* is for \*bold\s. You can combine it with colors, too:
+   \*\rred\s      \*\ggreen\s       \*\bblue\s       \*\kblack
+   \*\ccyan\s     \*\mmagenta\s     \*\yyellow\s     \*\wwhite
+
+Capital letters set background color:
+\\R \Rred\s   \\G \Ggreen\s    \\B \Bblue\s    \\K \Kblack
+\\C \Ccyan\s  \\M \Mmagenta\s  \\Y \Yyellow\s  \\W \Wwhite
+
+Use \\_ for \_underline\s and \\! for \!reverse\s.
+\\s resets everything back to normal, whatever your normal is.
+Use double slashes (\\\\) to escape slashes.
+Anything else, like \z, is unaffected.
+---
+| \gHorizontal Rulers
+
+You can start a line with a forward slash '\r/\s' to
+create a horizontal line across your slide:
+
+/
+
+Double slashes '\r//\s' create a line across the entire screen:
+
+//
+
+You can also specify custom patterns, as in '\r/=+\s':
+
+/=+
+
+You can use Unicode and ANSI colors, too. Be creative!
+
+/\r=\s\**\s\r=\b=\s\**\s\b=
+
+/ ⚡ ☁
+
+---
+| \gSyntax Highlighting
+
+Basic support for syntax highlighting is also provided.
+
+Just surround your Scala code with the \r```\s delimiter.
+
+< ```
+< val a = 42
+< ```
+
+becomes
+
+```
+val a = 42
+```
+---
+```
+import scala.util._
+
+var i = 0
+lazy val avogadro = 6.02e23
+
+def f(i: Int) = i + 1
+
+sealed trait A
+private object B extends A
+protected case class Person(name: String)
+
+try { 1 / 0 } catch { case e: Exception => 0 }
+
+if (this == null) true else false
+
+for (i <- 1 to 10) yield i * i
+
+a match {
+  case 1 => "one"
+  case _ => "not"
+}
+```
+---
+| \gRunning Code
+
+Now, what I personally consider to be the coolest feature of them all:
+
+| \*Running Scala code straight from your slides!
+
+Let's start with some sample code:
+
+```
+val a = 2
+val b = 3
+a * b
+```
+
+Now, enter '\b!!\s' or '\br\s' and see the Scala REPL execute the code
+above as if you had typed it yourself directly in the prompt.
+---
+That was pretty cool, eh? But it gets better.
+
+Remember we defined vals \ba\s and \bb\s in the previous slide?
+
+Any slide can now refer to those variables.
+They are still in scope. Try it if you don't believe me:
+
+```
+val c = a + b
+```
+--
+
+You can put multiple pieces of code in the same slide, separated
+by builds or not. They all get executed properly.
+--
+
+Let's try it. First, define a new value:
+
+```
+val last = a + b + c
+```
+
+And then use it:
+
+```
+for (i <- 1 to last) yield i * i
+```
+---
+Oh, noes! This is the last slide.
+
+And here ends our adventure.
+
+But I will leave you with one last command to try: '\bh\s'.
+
+Good luck with that!
+
+Now go back to slide 7 ('\b7 go\s') to learn
+how to create your own presentations!

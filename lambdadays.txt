@@ -1,0 +1,58 @@
+| \rA purely functional approach to building large applications
+
+| Lambda Days - 27 February 2015
+
+
+| Noel Markham - \b@noelmarkham
+---
+```
+import scalaz._
+import Scalaz._
+
+import scala.concurrent._
+import scala.concurrent.duration._
+
+```
+---
+```
+import com.noelmarkham.lambdadays.external.Twitter
+
+```
+
+--
+def getTweets(twitterHandle: String,
+              apiKey:        String,
+              apiSecret:     String): Future[List[Tweet]]
+
+case class UserDetails(screenName: String)
+case class Tweet(user: UserDetails, content: String)
+
+--
+```
+val tweetsFuture = Twitter.getTweets("noelmarkham", "apiKey", "apiSecret")
+```
+--
+
+```
+Await.result(tweetsFuture, 1.second).take(5).foreach(t => println(s"${t.content}\n"))
+```
+---
+```
+import com.noelmarkham.lambdadays.external.Markov
+
+```
+
+--
+def generateString(text: String,
+                   context: Int): Future[String]
+
+--
+```
+val tweets = Await.result(tweetsFuture, 1.second)
+def randomString = Markov.generateString(tweets.map(_.content).mkString(" "), 2)
+```
+
+--
+```
+Await.result(randomString, 1.second)
+```
