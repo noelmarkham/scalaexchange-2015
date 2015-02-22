@@ -14,10 +14,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object Twitter {
   case class UserDetails(screenName: String)
-  case class Tweet(user: UserDetails, content: String, published: String)
+  case class Tweet(user: UserDetails, content: String)
 
   implicit def detailsCodec: CodecJson[UserDetails] = casecodec1(UserDetails.apply, UserDetails.unapply)("screen_name")
-  implicit def tweetCodec: CodecJson[Tweet] = casecodec3(Tweet.apply, Tweet.unapply)("user", "text", "created_at")
+  implicit def tweetCodec: CodecJson[Tweet] = casecodec2(Tweet.apply, Tweet.unapply)("user", "text")
 
   def help(handle: String): String = Await.result(getTweets(handle, "", ""), 1.second).map(_.content).mkString(" ")
 
@@ -25,13 +25,14 @@ object Twitter {
     val source = scala.io.Source.fromFile(s"${twitterHandle.toLowerCase}.json").mkString
     val tweets = Parse.decodeOption[List[Tweet]](source).getOrElse(throw new RuntimeException("Cannot parse response"))
     tweets.filter {
-      case Tweet(UserDetails(screenName), content, _) => screenName.toLowerCase === twitterHandle.toLowerCase && !(content.startsWith("RT") || content.startsWith("@"))
+      case Tweet(UserDetails(screenName), content) => screenName.toLowerCase === twitterHandle.toLowerCase && !(content.startsWith("RT") || content.startsWith("@"))
     }
   }
 }
 
 object Markov {
 
+  // point out that this has random generation in it, but this is the API we want to use
   def generateString(text: String, context: Int): Future[String] = Future {
     val tokens = text.split(" ").map(_.trim).filterNot(_ == "").toList
 
