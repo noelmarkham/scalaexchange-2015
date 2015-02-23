@@ -12,7 +12,7 @@
  * Introduce the problem. (Perhaps that sequence diagram?)
  * Present a simple, "naïve" solution:
    - A function, from twitter username to randomly generated text, `String` -> `Future[String]`
- * How will this be tested? Integratopn test?
+ * How will this be tested? Integration test?
  * Discuss configuration
  
 ## Step 2 - Configuration extraction, introducing ReaderT

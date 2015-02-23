@@ -19,7 +19,7 @@ object Twitter {
   implicit def detailsCodec: CodecJson[UserDetails] = casecodec1(UserDetails.apply, UserDetails.unapply)("screen_name")
   implicit def tweetCodec: CodecJson[Tweet] = casecodec2(Tweet.apply, Tweet.unapply)("user", "text")
 
-  def help(handle: String): String = Await.result(getTweets(handle, "", ""), 1.second).map(_.content).mkString(" ")
+//  def help(handle: String): String = Await.result(getTweets(handle, "", ""), 1.second).map(_.content).mkString(" ")
 
   def getTweets(twitterHandle: String, apiKey: String, apiSecret: String): Future[List[Tweet]] = Future {
     val source = scala.io.Source.fromFile(s"${twitterHandle.toLowerCase}.json").mkString

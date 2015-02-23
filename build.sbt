@@ -4,9 +4,9 @@ version := "1.0"
 
 scalaVersion := "2.11.5"
 
-scalaSource in Test := baseDirectory.value / "test"
+//scalaSource in Test := baseDirectory.value / "test"
 
-resourceDirectory in Test := (scalaSource in Test).value / "resources"
+//resourceDirectory in Test := (scalaSource in Test).value / "resources"
 
 scalacOptions ++= Seq(
     "-deprecation"            // Emit warning and location for usages of deprecated APIs

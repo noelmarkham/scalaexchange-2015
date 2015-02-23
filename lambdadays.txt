@@ -1,4 +1,5 @@
-| \rA purely functional approach to building large applications
+| \rA purely functional approach
+| \rto building large applications
 
 | Lambda Days - 27 February 2015
 
@@ -9,32 +10,32 @@
 import scalaz._
 import Scalaz._
 
+--
 import scala.concurrent._
 import scala.concurrent.duration._
+import ExecutionContext.Implicits.global
 
 ```
 ---
 ```
 import com.noelmarkham.lambdadays.external.Twitter
-
 ```
 
 --
-def getTweets(twitterHandle: String,
-              apiKey:        String,
-              apiSecret:     String): Future[List[Tweet]]
+def getTweets(name: String,
+              apiKey: String,
+              apiSecret: String): Future[List[Tweet]]
 
 case class UserDetails(screenName: String)
 case class Tweet(user: UserDetails, content: String)
 
 --
 ```
-val tweetsFuture = Twitter.getTweets("noelmarkham", "apiKey", "apiSecret")
-```
---
-
-```
-Await.result(tweetsFuture, 1.second).take(5).foreach(t => println(s"${t.content}\n"))
+def tweetsFuture =
+  Twitter.getTweets("noelmarkham", "key", "secret")
+Await.result(tweetsFuture, 1.second)
+   .take(3)
+   .foreach(t => println(s"${t.content}\n"))
 ```
 ---
 ```
@@ -48,11 +49,53 @@ def generateString(text: String,
 
 --
 ```
-val tweets = Await.result(tweetsFuture, 1.second)
-def randomString = Markov.generateString(tweets.map(_.content).mkString(" "), 2)
+def tweets = Await.result(tweetsFuture, 1.second)
+def randomString = Markov.generateString(
+          tweets.map(_.content).mkString(" "), 2)
 ```
 
 --
 ```
 Await.result(randomString, 1.second)
+```
+---
+| \bWiring the two methods together properly
+
+--
+```
+val apiKey = "APIKey"
+val apiSecret = "APISecret"
+val context = 2
+
+def randString(username: String): Future[String] = for {
+  ts <- Twitter.getTweets(username, apiKey, apiSecret)
+  tweetsAsText = tweets.map(_.content).mkString(" ")
+  r <- Markov.generateString(tweetsAsText, context)
+} yield r
+```
+--
+
+```
+Await.result(randString("noelmarkham"), 1.second)
+```
+---
+| \bExtracting the configuration
+--
+
+```
+val strLen: String => Int = _.length
+val isEven: Int => Boolean = _ % 2 == 0
+```
+--
+
+```
+val isEvenLengthString = strLen andThen isEven
+```
+--
+
+\b Functions as functors:
+--
+
+```
+val isEvenLengthString = strLen map isEven
 ```
