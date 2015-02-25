@@ -21,7 +21,6 @@ import ExecutionContext.Implicits.global
 import com.noelmarkham.lambdadays.external.Twitter
 ```
 
---
 def getTweets(name: String,
               apiKey: String,
               apiSecret: String): Future[List[Tweet]]
@@ -43,7 +42,6 @@ import com.noelmarkham.lambdadays.external.Markov
 
 ```
 
---
 def generateString(text: String,
                    context: Int): Future[String]
 
@@ -98,4 +96,59 @@ val isEvenLengthString = strLen andThen isEven
 
 ```
 val isEvenLengthString = strLen map isEven
+```
+---
+| \bFunctions as functors
+--
+
+```
+case class Config(key: String,
+                  secret: String,
+                  context: Int)
+```
+--
+
+```
+val keyFromConfig: Config => String = _.key
+val secretFromConfig: Config => String = _.secret
+```
+--
+
+```
+val keyAndSecret: Config => (String, String) = ???
+```
+---
+| val keyAndSecret: Config => (String, String) = ???
+
+```
+val keyAndSecret: Config => (String, String) = c => {
+  (keyFromConfig(c), secretFromConfig(c))
+}
+```
+--
+
+```
+keyAndSecret(Config("k", "s", 3)) === ("k" -> "s")
+```
+--
+
+| \rShip it!
+---
+| val keyAndSecret: Config => (String, String) = ???
+--
+
+| \bFunctions as \rmonads
+--
+
+```
+val keyAndSecret: Config => (String, String) =
+  for {
+    k <- keyFromConfig
+    s <- secretFromConfig
+  } yield (k, s)
+```
+--
+
+```
+keyAndSecret(Config("k", "s", 3)) === ("k" -> "s")
 ```
