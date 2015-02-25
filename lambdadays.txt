@@ -57,7 +57,7 @@ def randomString = Markov.generateString(
 Await.result(randomString, 1.second)
 ```
 ---
-| \bWiring the two methods together properly
+| \bWiring the two methods together
 
 --
 ```
@@ -92,14 +92,12 @@ val isEvenLengthString = strLen andThen isEven
 --
 
 \b Functions as functors:
---
 
 ```
 val isEvenLengthString = strLen map isEven
 ```
 ---
 | \bFunctions as functors
---
 
 ```
 case class Config(key: String,
@@ -118,7 +116,7 @@ val secretFromConfig: Config => String = _.secret
 val keyAndSecret: Config => (String, String) = ???
 ```
 ---
-| val keyAndSecret: Config => (String, String) = ???
+| \bval keyAndSecret: Config => (String, String) = ???
 
 ```
 val keyAndSecret: Config => (String, String) = c => {
@@ -134,7 +132,7 @@ keyAndSecret(Config("k", "s", 3)) === ("k" -> "s")
 
 | \rShip it!
 ---
-| val keyAndSecret: Config => (String, String) = ???
+| \bval keyAndSecret: Config => (String, String) = ???
 --
 
 | \bFunctions as \rmonads
@@ -151,4 +149,188 @@ val keyAndSecret: Config => (String, String) =
 
 ```
 keyAndSecret(Config("k", "s", 3)) === ("k" -> "s")
+```
+---
+| \bSeparating the configuration
+
+```
+def getTweets(username: String):
+          Config => Future[List[Twitter.Tweet]] = c => {
+
+  Twitter.getTweets(username, c.key, c.secret)
+}
+
+def generateString(text: String):
+          Config => Future[String] = c => {
+
+  Markov.generateString(text, c.context)
+}
+```
+---
+| \bFlatMap?
+--
+\rReminder:
+def getTweets(username: String):
+                   Config => Future[List[Twitter.Tweet]]
+def generateString(text: String):
+                   Config => Future[String]
+--
+/
+```
+def randString(username: String):
+                            Config => Future[String]
+  for {
+    tweets <- getTweets(username)
+```
+--
+    ... ???
+--
+| \b... lets take a step back
+---
+| \bReader
+
+```
+val keyFromConfig: Config => String = _.key
+val secretFromConfig: Config => String = _.secret
+```
+--
+
+```
+val keyFromConfig: Reader[Config, String] =
+                                       Reader(_.key)
+
+val secretFromConfig: Reader[Config, String] =
+                                       Reader(_.secret)
+```
+--
+
+
+```
+keyFromConfig.run(Config("key", "secret", 2)) === "key"
+```
+---
+| \bAs before...
+
+```
+val keyAndSecret: Reader[Config, (String, String)] =
+  for {
+    k <- keyFromConfig
+    s <- secretFromConfig
+  } yield (k, s)
+```
+--
+
+```
+keyAndSecret.run(Config("k", "s", 3)) === ("k" -> "s")
+```
+---
+| \bMonad Transformers
+
+--
+| Recap
+
+```
+val fo: Future[Option[Int]] = Future(Some(1))
+```
+--
+
+```
+val optionT: OptionT[Future, Int] = OptionT(fo)
+```
+--
+
+```
+val foUpdated = optionT.map(_ + 9) //make this flatMap?
+```
+--
+
+```
+val newFuture: Future[Option[Int]] = foUpdated.run
+```
+--
+
+```
+Await.result(newFuture, 1.second) === Some(10)
+```
+---
+| \bThe ReaderT monad
+--
+
+```
+val f: String => Future[Int] = s => Future(s.length)
+```
+--
+
+```
+import Kleisli._
+val reader: ReaderT[Future, String, Int] = kleisli(f)
+```
+--
+
+```
+val futResult: Future[Int] = reader.run("lambda days")
+```
+--
+
+```
+Await.result(futResult, 1.second) === 11
+```
+---
+| \bBack to our example
+\rWe had:
+```
+--
+
+def getTweets(username: String):
+          Config => Future[List[Twitter.Tweet]] = c => {
+
+  Twitter.getTweets(username, c.key, c.secret)
+}
+
+def generateString(text: String):
+          Config => Future[String] = c => {
+
+  Markov.generateString(text, c.context)
+}
+```
+---
+| \bBack to our example
+\rChanged to:
+```
+def getTweets(username: String):
+      ReaderT[Future, Config, List[Twitter.Tweet]] = {
+  kleisli { c =>
+   Twitter.getTweets(username, c.key, c.secret)
+  }
+}
+def generateString(text: String):
+      ReaderT[Future, Config, String] = {
+  kleisli { c =>
+    Markov.generateString(text, c.context)
+  }
+}
+```
+---
+| \bPlugging the methods together... again!
+```
+--
+
+def randString(username: String):
+                   ReaderT[Future, Config, String] = {
+  for {
+    tweets <- getTweets(username)
+    tweetsAsText = tweets.map(_.content).mkString(" ")
+    randomString <- generateString(tweetsAsText)
+  } yield randomString
+}
+```
+--
+
+```
+def forMe = randString("noelmarkham")
+                       .run(Config("apiKey", "secret", 2))
+```
+--
+```
+Await.result(forMe, 1.second)
 ```

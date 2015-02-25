@@ -1,5 +1,7 @@
 # A purely functional approach to building large applications
 
+val m = REPLesent(input="lambdadays.txt", intp=$intp); import m._
+
 ## Introduction
 
  * Who I am
