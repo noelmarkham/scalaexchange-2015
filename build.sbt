@@ -67,7 +67,8 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % "7.0.7",
   "net.databinder.dispatch" %% "dispatch-core" % "0.11.2",
   "commons-codec" % "commons-codec" % "1.4",
-  "io.argonaut" %% "argonaut" % "6.1-M4"
+  "io.argonaut" %% "argonaut" % "6.1-M4",
+  "org.scalatest" % "scalatest_2.11" % "2.2.4"
 )
 
 // Improved incremental compilation

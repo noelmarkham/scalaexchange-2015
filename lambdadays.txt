@@ -154,8 +154,10 @@ keyAndSecret(Config("k", "s", 3)) === ("k" -> "s")
 | \bSeparating the configuration
 
 ```
+import Twitter.Tweet
+
 def getTweets(username: String):
-          Config => Future[List[Twitter.Tweet]] = c => {
+          Config => Future[List[Tweet]] = c => {
 
   Twitter.getTweets(username, c.key, c.secret)
 }
@@ -171,7 +173,7 @@ def generateString(text: String):
 --
 \rReminder:
 def getTweets(username: String):
-                   Config => Future[List[Twitter.Tweet]]
+                   Config => Future[List[Tweet]]
 def generateString(text: String):
                    Config => Future[String]
 --
@@ -282,7 +284,7 @@ Await.result(futResult, 1.second) === 11
 --
 
 def getTweets(username: String):
-          Config => Future[List[Twitter.Tweet]] = c => {
+          Config => Future[List[Tweet]] = c => {
 
   Twitter.getTweets(username, c.key, c.secret)
 }
@@ -298,7 +300,7 @@ def generateString(text: String):
 \rChanged to:
 ```
 def getTweets(username: String):
-      ReaderT[Future, Config, List[Twitter.Tweet]] = {
+      ReaderT[Future, Config, List[Tweet]] = {
   kleisli { c =>
    Twitter.getTweets(username, c.key, c.secret)
   }
@@ -333,4 +335,64 @@ def forMe = randString("noelmarkham")
 --
 ```
 Await.result(forMe, 1.second)
+```
+---
+| \bEasier to test?
+--
+| \bExtract our two methods:
+```
+def randString(
+   getTweetsF:
+     String => ReaderT[Future, Config, List[Tweet]],
+   generateTextF:
+     String => ReaderT[Future, Config, String]
+   )(username: String):
+                     ReaderT[Future, Config, String] = {
+  for {
+    tweets <- getTweetsF(username)
+    tweetsAsText = tweets.map(_.content).mkString(" ")
+    randomString <- generateTextF(tweetsAsText)
+  } yield randomString
+}
+```
+---
+```
+import Twitter.UserDetails
+
+def tweetsForTest(name: String):
+               ReaderT[Future, Config, List[Tweet]] =
+  kleisli { _ =>
+    Future {
+      List(
+        Tweet(UserDetails("x"), "a"),
+        Tweet(UserDetails("x"), "b"),
+        Tweet(UserDetails("x"), "c")
+      )
+    }
+  }
+```
+---
+```
+var receivedText: Option[String] = None
+
+def genTextForTest(text: String):
+               ReaderT[Future, Config, String] =
+  kleisli { _ =>
+    receivedText = Some(text)
+    Future("done")
+  }
+```
+---
+```
+val testGen =
+   randString(tweetsForTest, genTextForTest)("test")
+
+val resFuture = testGen.run(Config("k", "s", 2))
+
+val result = Await.result(resFuture, 1.second)
+```
+--
+
+```
+result === "done" && receivedText == Some("a b c")
 ```

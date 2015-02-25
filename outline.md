@@ -34,7 +34,6 @@ val m = REPLesent(input="lambdadays.txt", intp=$intp); import m._
 
  * Write a curried function, the first param list are parameters of functions returning `ReaderT[Function, Config, X]`s. Second is the parameter to the overall function. Returns a `ReaderT[Function, Config, Y]`.
    - We now have a way to test the way we wire the code together, separate from any calls to any third parties
-   - Allude to this being "dependency injection"
  * Introduce Scalacheck, to "mock out" the call to the twitter service. Highlight that the markov generator has random embedded in it. This is the API we're using and we can't change it.  
 
 ## Step 4 - Abstraction
