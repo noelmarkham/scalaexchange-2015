@@ -466,6 +466,7 @@ def randString[M[_]: Monad](
 | \bBack to our test
 ```
 type W[X] = Writer[Map[String, Int], X] // brevity here
+
 val prop = forAll { (tweets: List[Tweet]) =>
   def tweetsF(name: String): W[List[Tweet]] =
                          tweets.set(Map("tweets" -> 1))
