@@ -170,7 +170,6 @@ def generateString(text: String):
 ```
 ---
 | \bFlatMap?
---
 \rReminder:
 def getTweets(username: String):
                    Config => Future[List[Tweet]]
@@ -196,7 +195,7 @@ val keyFromConfig: Config => String = _.key
 val secretFromConfig: Config => String = _.secret
 ```
 --
-
+/
 ```
 val keyFromConfig: Reader[Config, String] =
                                        Reader(_.key)
@@ -262,7 +261,7 @@ Await.result(newFuture, 1.second) === Some(10)
 val f: String => Future[Int] = s => Future(s.length)
 ```
 --
-
+TODO PUT SOMETHING ON THIS PAGE ABOUT MAP OR FLATMAP!
 ```
 import Kleisli._
 val reader: ReaderT[Future, String, Int] = kleisli(f)
@@ -498,3 +497,28 @@ val prop = forAll { (tweets: List[Tweet]) =>
   Map("tweets" -> 1, "text" -> 1, "log" -> 2) === run._1
 }
 ```
+---
+| \bWhat have we achieved?
+
+--
+We were given some unhelpful APIs
+
+--
+Provided an easy way to provide different configurations:
+  - Reader and ReaderT monads
+
+--
+Made the integration of the APIs easily testable:
+  - Abstracting over monads
+  - "Wiring" functions together
+
+--
+All using some very powerful libraries:
+  - Scalaz
+  - Scalacheck
+  - Shapeless
+---
+| \rThank you
+
+
+| Noel Markham - \b@noelmarkham
