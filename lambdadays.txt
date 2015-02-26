@@ -241,7 +241,7 @@ val optionT: OptionT[Future, Int] = OptionT(fo)
 --
 
 ```
-val foUpdated = optionT.map(_ + 9) //make this flatMap?
+val foUpdated = optionT.map(_ + 9)
 ```
 --
 
@@ -261,7 +261,7 @@ Await.result(newFuture, 1.second) === Some(10)
 val f: String => Future[Int] = s => Future(s.length)
 ```
 --
-TODO PUT SOMETHING ON THIS PAGE ABOUT MAP OR FLATMAP!
+
 ```
 import Kleisli._
 val reader: ReaderT[Future, String, Int] = kleisli(f)
@@ -463,6 +463,7 @@ def randString[M[_]: Monad](
 ```
 ---
 | \bBack to our test
+--
 ```
 type W[X] = Writer[Map[String, Int], X] // brevity here
 
@@ -504,7 +505,7 @@ val prop = forAll { (tweets: List[Tweet]) =>
 We were given some unhelpful APIs
 
 --
-Provided an easy way to provide different configurations:
+We found a nice way to provide different configurations:
   - Reader and ReaderT monads
 
 --
