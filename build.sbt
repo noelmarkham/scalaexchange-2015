@@ -64,11 +64,12 @@ unsound-match              Pattern match may not be typesafe
 libraryDependencies ++= Seq(
     "org.scala-lang"  % "scala-compiler" % "2.11.5" % Compile,
   "org.scalatest"  %% "scalatest"      % "2.2.4"  % Test,
-  "org.scalaz" %% "scalaz-core" % "7.0.7",
+  "org.scalaz" %% "scalaz-core" % "7.1.1",
   "net.databinder.dispatch" %% "dispatch-core" % "0.11.2",
   "commons-codec" % "commons-codec" % "1.4",
   "io.argonaut" %% "argonaut" % "6.1-M4",
-  "org.scalatest" % "scalatest_2.11" % "2.2.4"
+  "org.scalacheck" %% "scalacheck" % "1.12.2",
+  "org.typelevel" %% "shapeless-scalacheck" % "0.3"
 )
 
 // Improved incremental compilation

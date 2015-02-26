@@ -330,7 +330,7 @@ def randString(username: String):
 
 ```
 def forMe = randString("noelmarkham")
-                       .run(Config("apiKey", "secret", 2))
+                    .run(Config("apiKey", "secret", 2))
 ```
 --
 ```
@@ -356,43 +356,34 @@ def randString(
 }
 ```
 ---
-```
-import Twitter.UserDetails
+| \bTesting
 
-def tweetsForTest(name: String):
-               ReaderT[Future, Config, List[Tweet]] =
-  kleisli { _ =>
-    Future {
-      List(
-        Tweet(UserDetails("x"), "a"),
-        Tweet(UserDetails("x"), "b"),
-        Tweet(UserDetails("x"), "c")
-      )
-    }
-  }
 ```
----
-```
-var receivedText: Option[String] = None
-
-def genTextForTest(text: String):
-               ReaderT[Future, Config, String] =
-  kleisli { _ =>
-    receivedText = Some(text)
-    Future("done")
-  }
-```
----
-```
-val testGen =
-   randString(tweetsForTest, genTextForTest)("test")
-
-val resFuture = testGen.run(Config("k", "s", 2))
-
-val result = Await.result(resFuture, 1.second)
+import org.scalacheck.Prop.forAll
 ```
 --
 
+
+\g"org.typelevel" %% "shapeless-scalacheck" % "0.3"
+
 ```
-result === "done" && receivedText == Some("a b c")
+import shapeless.contrib.scalacheck._
+```
+---
+```
+val prop = forAll { (tweets: List[Tweet]) =>
+  def tweetsR(name: String):
+               ReaderT[Future, Config, List[Tweet]] = {
+    kleisli { _ => Future(tweets) }
+  }
+  def textR(text: String):
+               ReaderT[Future, Config, String] = {
+    kleisli { _ => Future(text) }
+  }
+  val r = randString(tweetsR, textR)("name")
+  val receivedText =
+     Await.result(r.run(Config("a", "b", 2)), 1.second)
+
+  tweets.all(t => receivedText.contains(t.content))
+}
 ```
