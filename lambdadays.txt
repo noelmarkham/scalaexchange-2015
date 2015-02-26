@@ -387,3 +387,54 @@ val prop = forAll { (tweets: List[Tweet]) =>
   tweets.all(t => receivedText.contains(t.content))
 }
 ```
+---
+| \bAbstracting over the ReaderT monad
+--
+\rWe had:
+```
+def randString(
+   getTweetsF:
+     String => ReaderT[Future, Config, List[Tweet]],
+   generateTextF:
+     String => ReaderT[Future, Config, String]
+   )(username: String):
+                     ReaderT[Future, Config, String] = {
+  for {
+    tweets <- getTweetsF(username)
+    tweetsAsText = tweets.map(_.content).mkString(" ")
+    randomString <- generateTextF(tweetsAsText)
+  } yield randomString
+}
+```
+---
+| \bAbstracting over the ReaderT monad
+
+\rWe can change this to:
+--
+```
+def randString[M[_]: Monad](
+    getTweetsF: String => M[List[Tweet]],
+    generateTextF: String => M[String]
+  )(username: String): M[String] = {
+
+  for {
+    tweets <- getTweetsF(username)
+    tweetsAsText = tweets.map(_.content).mkString(" ")
+    randomString <- generateTextF(tweetsAsText)
+  } yield randomString
+}
+```
+---
+| \bNicer tests!
+--
+
+```
+val prop = forAll { (tweets: List[Tweet]) =>
+  def tweetsF(name: String): Id[List[Tweet]] = tweets
+  def textF(text: String): Id[String] = text
+
+  val receivedText = randString(tweetsF, textF)("name")
+
+  tweets.all(t => receivedText.contains(t.content))
+}
+```

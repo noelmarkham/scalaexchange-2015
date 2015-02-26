@@ -22,6 +22,7 @@ scalacOptions ++= Seq(
   , "-Xlint:_,-nullary-unit"  // Enable or disable specific warnings (see list below)
   , "-Yno-adapted-args"       // Do not adapt an argument list to match the receiver
   , "-Ywarn-dead-code"        // Warn when dead code is identified
+  , "-language:higherKinds"
 // Not really useful
 //  , "-Ywarn-numeric-widen"    // Warn when numerics are widened
 //  , "-Ywarn-unused"           // Warn when local and private vals, vars, defs, and types are are unused
