@@ -438,3 +438,62 @@ val prop = forAll { (tweets: List[Tweet]) =>
   tweets.all(t => receivedText.contains(t.content))
 }
 ```
+---
+| \rNew feature request: logging
+--
+
+
+| def log(text: String): Future[Unit]
+---
+| \rNew feature request: logging
+
+```
+def randString[M[_]: Monad](
+    getTweetsF: String => M[List[Tweet]],
+    generateTextF: String => M[String],
+    logF: String => M[Unit]
+  )(username: String): M[String] = {
+  for {
+    tweets <- getTweetsF(username)
+    _ <- logF(s"Received tweets: $tweets")
+    tweetsAsText = tweets.map(_.content).mkString(" ")
+    randomString <- generateTextF(tweetsAsText)
+    _ <- logF(s"Generated $randomString for $username")
+  } yield randomString
+}
+```
+---
+| \bBack to our test
+```
+type W[X] = Writer[Map[String, Int], X] // brevity here
+val prop = forAll { (tweets: List[Tweet]) =>
+  def tweetsF(name: String): W[List[Tweet]] =
+                         tweets.set(Map("tweets" -> 1))
+
+  def textF(text: String): W[String] =
+                         text.set(Map("text" -> 1))
+
+  def logF(text: String): W[Unit] = Map("log" -> 1).tell
+
+  val run = randString(tweetsF, textF, logF)("name").run
+  Map("tweets" -> 1, "text" -> 1, "log" -> 1) === run._1
+}
+```
+---
+| \bBack to our test
+```
+type W[X] = Writer[Map[String, Int], X] // brevity here
+
+val prop = forAll { (tweets: List[Tweet]) =>
+  def tweetsF(name: String): W[List[Tweet]] =
+                         tweets.set(Map("tweets" -> 1))
+
+  def textF(text: String): W[String] =
+                         text.set(Map("text" -> 1))
+
+  def logF(text: String): W[Unit] = Map("log" -> 1).tell
+
+  val run = randString(tweetsF, textF, logF)("name").run
+  Map("tweets" -> 1, "text" -> 1, "log" -> 2) === run._1
+}
+```

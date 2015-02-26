@@ -45,7 +45,7 @@ val m = REPLesent(input="lambdadays.txt", intp=$intp); import m._
 
  * Introduce a logging function. Returns `Future[Unit]`
  * Change the test to include the logging.
- * Have the test use the `State` monad (or maybe the writer monad).
+ * Have the test use the `Writer` monad (or maybe the writer monad).
  
 ## Conclusion
 
