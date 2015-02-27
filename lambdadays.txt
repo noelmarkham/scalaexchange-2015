@@ -67,7 +67,7 @@ val context = 2
 
 def randString(username: String): Future[String] = for {
   ts <- Twitter.getTweets(username, apiKey, apiSecret)
-  tweetsAsText = tweets.map(_.content).mkString(" ")
+  tweetsAsText = ts.map(_.content).mkString(" ")
   r <- Markov.generateString(tweetsAsText, context)
 } yield r
 ```

@@ -61,6 +61,6 @@ object Markov {
 
     val sentence = startingWords ++ go(startingWords, Nil).reverse
 
-    sentence.dropWhile(s => !s.charAt(0).isUpper).mkString(" ").split("(?<=[.?!] )").headOption.getOrElse("").trim
+    sentence.dropWhile(s => !s.charAt(0).isUpper).mkString(" ").split("(?<=[.?!] )").headOption.getOrElse("").trim.replace("\"", "")
   }
 }
