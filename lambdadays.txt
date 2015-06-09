@@ -37,6 +37,18 @@ Await.result(tweetsFuture, 1.second)
    .foreach(t => println(s"${t.content}\n"))
 ```
 ---
+| \bMarkov Chains
+
+--
+| "My name is Noel. My name is Christmas in French."
+--
+
+| \rContext = 2
+
+[My, name] -> [is]
+--
+[name, is] -> [Noel, Christmas]
+---
 ```
 import com.noelmarkham.lambdadays.external.Markov
 
