@@ -1,6 +1,6 @@
 # A purely functional approach to building large applications
 
-This talk was given at Lambda Days 2015.
+This talk was given at Lambda Days in February 2015 and Scala Days in June 2015.
 
 To run the presentation, open a `console` inside `sbt`.
 
