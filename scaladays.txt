@@ -36,6 +36,7 @@ case class Tweet(user: UserDetails, content: String)
 ```
 def tweetsFuture =
   Twitter.getTweets("noelmarkham", "key", "secret")
+  
 Await.result(tweetsFuture, 1.second)
    .take(3)
    .foreach(t => println(s"${t.content}\n"))
@@ -221,7 +222,6 @@ val keyFromConfig: Reader[Config, String] =
 val secretFromConfig: Reader[Config, String] =
                                        Reader(_.secret)
 ```
---
 
 
 ```
@@ -282,17 +282,21 @@ val f: String => Future[Int] = s => Future(s.length)
 
 ```
 import Kleisli._
+
+// takes a function, just like the Reader constructor
 val reader: ReaderT[Future, String, Int] = kleisli(f)
 ```
 --
-
 ```
-val futResult: Future[Int] = reader.run("scala days")
+
+val mapped = reader.map(_ % 2 == 0)
+
+val futResult: Future[Boolean] = mapped.run("scala days")
 ```
 --
 
 ```
-Await.result(futResult, 1.second) === 11
+Await.result(futResult, 1.second)
 ```
 ---
 | \bBack to our example
@@ -406,7 +410,6 @@ val prop = forAll { (tweets: List[Tweet]) =>
 ```
 ---
 | \bAbstracting over the ReaderT monad
---
 \rWe had:
 ```
 def randString(
