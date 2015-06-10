@@ -7,7 +7,7 @@ To run the presentation, open a `console` inside `sbt`.
 Run the following line:
 
 ```
-val rp = REPLesent(input="lambdadays.txt", intp=$intp); import rp._
+val rp = REPLesent(input="scaladays.txt", intp=$intp); import rp._
 ```
 
 Then open the first slide by typing `f`.
