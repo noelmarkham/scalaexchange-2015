@@ -74,10 +74,10 @@ libraryDependencies ++= Seq(
 )
 
 // Improved incremental compilation
-incOptions := incOptions.value.withNameHashing(true)
+//incOptions := incOptions.value.withNameHashing(true)
 
 // Improved dependency management
-updateOptions := updateOptions.value.withCachedResolution(true)
+//updateOptions := updateOptions.value.withCachedResolution(true)
 
 // Download and create Eclipse source attachments for library dependencies
 // EclipseKeys.withSource := true
