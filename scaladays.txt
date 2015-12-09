@@ -1,7 +1,7 @@
 | \rA purely functional approach
 | \rto building large applications
 
-| Scala Days - 10 June 2015
+| Scala eXchange - 10 December 2015
 
 
 | Noel Markham - \b@noelmarkham
@@ -545,3 +545,5 @@ All using some very powerful libraries:
 
 
 | Noel Markham - \b@noelmarkham
+
+| ITV are hiring!
